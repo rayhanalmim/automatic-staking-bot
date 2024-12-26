@@ -12,7 +12,6 @@ PHANTOM_POPUP_URL = "chrome-extension://bfnaelmomeimhlpmgjnjophhpkkoljpa/popup.h
 PASSWORD = "2VGw8q5eVfkigXZ4yrEMYCbEoELTrRYjCorZwiYG6SNZt5rK4pCXW2BAqMFmiYjtTN6xvJLYjxCPZ7GEnYb3JBXp"  # Replace with your actual password
 
 def clean_user_data():
-    """Clean up the persistent user data directory to avoid browser context corruption."""
     if os.path.exists(USER_DATA_DIR):
         shutil.rmtree(USER_DATA_DIR)
 
