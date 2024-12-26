@@ -2,7 +2,6 @@ from playwright.sync_api import sync_playwright
 import shutil
 import os
 import time
-from utils import clean_user_data, connect_phantom_wallet, is_wallet_connected  # Importing functions from utils.py
 
 # Constants
 PHANTOM_EXTENSION_PATH = r"C:\Users\Ant UI Designer\AppData\Local\Google\Chrome\User Data\Profile 16\Extensions\bfnaelmomeimhlpmgjnjophhpkkoljpa\24.30.0_0"
@@ -11,6 +10,34 @@ USER_DATA_DIR = "user_data"
 PHANTOM_POPUP_URL = "chrome-extension://bfnaelmomeimhlpmgjnjophhpkkoljpa/popup.html"
 
 PASSWORD = "2VGw8q5eVfkigXZ4yrEMYCbEoELTrRYjCorZwiYG6SNZt5rK4pCXW2BAqMFmiYjtTN6xvJLYjxCPZ7GEnYb3JBXp"  # Replace with your actual password
+
+
+def clean_user_data():
+    """Clean up the persistent user data directory to avoid browser context corruption."""
+    if os.path.exists(USER_DATA_DIR):
+        shutil.rmtree(USER_DATA_DIR)
+
+def connect_phantom_wallet(page):
+    """Function to connect Phantom wallet."""
+    print("Connecting Phantom wallet...")
+
+    try:
+        # Navigate to the Phantom popup page
+        page.goto(PHANTOM_POPUP_URL, wait_until="domcontentloaded")
+
+        # Wait for the password field to appear
+        page.wait_for_selector("input[type='password']", timeout=10000)
+
+        print("Password field found, filling it with the provided password...")
+        # Fill the password field
+        page.fill("input[type='password']", PASSWORD)
+
+        # Click the "Unlock" button
+        page.click("button[type='submit']")
+        print("Phantom wallet unlocked successfully.")
+    except Exception as e:
+        print(f"Error connecting Phantom wallet: {e}")
+        raise
 
 def navigate_to_kamino(page):
     """Function to navigate to Kamino and connect Phantom wallet."""
@@ -62,11 +89,8 @@ def main():
             # Set viewport size
             page.set_viewport_size({"width": 1920, "height": 1080})
 
-            # Check if Phantom wallet is connected, otherwise connect it
-            if not is_wallet_connected(page):
-                connect_phantom_wallet(page)
-
-            # Navigate to Kamino and connect the wallet if necessary
+            # Connect Phantom wallet and navigate to Kamino
+            connect_phantom_wallet(page)
             navigate_to_kamino(page)
 
         except Exception as e:
