@@ -13,7 +13,7 @@ PHANTOM_POPUP_URL = "chrome-extension://bfnaelmomeimhlpmgjnjophhpkkoljpa/popup.h
 PASSWORD = "2VGw8q5eVfkigXZ4yrEMYCbEoELTrRYjCorZwiYG6SNZt5rK4pCXW2BAqMFmiYjtTN6xvJLYjxCPZ7GEnYb3JBXp"  # Replace with your actual password
 
 def navigate_to_kamino(page):
-    """Function to navigate to Kamino and connect Phantom wallet."""
+    """Function to navigate to Kamino, connect Phantom wallet, go to Multiply tab, navigate to the specified page, select 3x value from slider, and click setup button."""
     print("Navigating to Kamino...")
     try:
         page.goto(KAMINO_URL, wait_until="domcontentloaded")
@@ -38,9 +38,45 @@ def navigate_to_kamino(page):
         # Wait for wallet connection
         page.wait_for_function("window.solana && window.solana.publicKey", timeout=15000)
         print("Successfully connected Phantom wallet to Kamino.")
+
+        # Navigate to the "Multiply" tab
+        print("Navigating to the Multiply tab...")
+        page.click("#root > div._root_j51kl_37 > header > div > div._menuWrapper_xfcc6_25 > nav > a:nth-child(4)")
+        print("Navigated to the Multiply tab.")
+
+        # Navigate to the specified page after Multiply tab
+        print("Navigating to the specified page...")
+        page.click("#BACKGROUND_OVERRIDE > div > div._featured_1kpep_28 > div:nth-child(2)")
+        print("Navigated to the specified page.")
+
+        # Wait for the slider element to be visible
+        page.wait_for_selector("#BACKGROUND_OVERRIDE > div > div._content_1whb1_66 > div > div._rightCol_1whb1_33 > div > div > div > div._slider_1ats1_18 > span > span._sliderTrack_a6xk5_12 > span", timeout=10000)
+        print("Slider element found.")
+
+        # Set the slider to the 3x value
+        print("Setting slider to 3x value...")
+        slider = page.query_selector("#BACKGROUND_OVERRIDE > div > div._content_1whb1_66 > div > div._rightCol_1whb1_33 > div > div > div > div._slider_1ats1_18 > span > span._sliderTrack_a6xk5_12 > span")
+        
+        # Move slider to the position representing 3x
+        # You may need to adjust this based on the slider's value scale.
+        slider.bounding_box()
+        page.mouse.move(100, 0)  # Example, adjust based on the slider's actual scale
+        page.mouse.down()
+        page.mouse.move(400, 0)  # Move to the 3x position
+        page.mouse.up()
+        
+        print("Slider set to 3x.")
+
+        # Wait for the setup button to be visible and click it
+        print("Clicking the setup button...")
+        page.click("#BACKGROUND_OVERRIDE > div > div._content_1whb1_66 > div > div._rightCol_1whb1_33 > div > div > div > div._root_vep39_1 > span > button")
+        print("Clicked the setup button.")
+        
     except Exception as e:
         print(f"Error navigating to Kamino: {e}")
         raise
+
+
 
 def main():
     with sync_playwright() as p:
